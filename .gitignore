@@ -19,3 +19,5 @@ wheels/
 data/
 
 .DS_Store
+
+airflow/logs/
