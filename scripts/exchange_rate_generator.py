@@ -1,11 +1,9 @@
 from dotenv import load_dotenv
 import os
 from requests import get
-import json
 from datetime import datetime
 import pandas as pd
-
-load_dotenv()
+import sys
 
 api_key = os.getenv("EX_API_KEY")
 url = f"http://api.currencylayer.com/live?access_key={api_key}&source=USD"
@@ -27,7 +25,7 @@ for key, value in kurs.items():
 data_str = datetime.strftime(dt_format, "%Y%m%d")
 df = pd.DataFrame(tabular_data)
 df.to_csv(
-    f"../data/exchange_rate/fresh_exchange_rate_{data_str}.csv",
+    f"/opt/data/exchange_rate/fresh_exchange_rate_{data_str}.csv",
     index=False,
     sep=",",
     encoding="utf-8",

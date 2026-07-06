@@ -8,12 +8,15 @@ x-airflow-common: &airflow-common
     AIRFLOW__CORE__FERNET_KEY: ''
     AIRFLOW__LOGGING__LOGGING_LEVEL: INFO
     AIRFLOW__CORE__LOAD_EXAMPLES: 'False'
+    AIRFLOW_CONN_AWS_S3_CONN: "${AIRFLOW_CONN_AWS_S3_CONN}"
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - ./airflow/logs:/opt/airflow/logs
     - ./airflow/plugins:/opt/airflow/plugins
     - ./data:/opt/data
     - ./scripts:/opt/airflow/scripts
+  env_file:
+    - ./.env
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     postgres_airflow:
@@ -32,13 +35,15 @@ services:
       timeout: 10s
       retries: 5
     depends_on:
-      - dbt-init
+      dbt-init:
+        condition: service_completed_successfully
 
   scheduler:
     <<: *airflow-common
     command: scheduler
     depends_on:
-      - dbt-init
+      dbt-init:
+        condition: service_completed_successfully
 
   dbt-init:
     <<: *airflow-common

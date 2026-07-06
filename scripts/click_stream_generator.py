@@ -9,11 +9,11 @@ faker = Faker()
 
 def db_connect():
     conn = psycopg2.connect(
-        host="localhost",
+        host="postgres_db",
         database="ecom_db",
         user="admin",
         password="password",
-        port="5433",
+        port="5432",
     )
     return conn
 
@@ -98,7 +98,7 @@ events = generate_click_events(customers)
 
 
 file_name = f"clickstream_{datetime.now().strftime('%Y%m%d')}.json"
-file_path = f"../data/logs/{file_name}"
+file_path = f"/opt/data/logs/{file_name}"
 
 with open(file_path, "w") as f:
     json.dump(events, f, indent=4)

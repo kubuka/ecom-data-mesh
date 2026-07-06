@@ -1,21 +1,17 @@
-import os
-from dotenv import load_dotenv
 import psycopg2
 from faker import Faker
 from datetime import datetime, timedelta
-
-load_dotenv()
 
 faker = Faker()
 
 
 def db_connect():
     conn = psycopg2.connect(
-        host="localhost",
+        host="postgres_db",
         database="ecom_db",
         user="admin",
         password="password",
-        port="5433",
+        port="5432",
     )
     return conn
 
@@ -42,6 +38,7 @@ def db_init():
 
 
 def generate_odrers(num_records=100):
+    db_init()
     conn = db_connect()
     cursor = conn.cursor()
     target_date = datetime.now()
@@ -76,5 +73,4 @@ def generate_odrers(num_records=100):
     print("Orders deployed")
 
 
-db_init()
 generate_odrers(100)
