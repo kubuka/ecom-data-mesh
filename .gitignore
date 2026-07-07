@@ -21,3 +21,6 @@ data/
 .DS_Store
 
 airflow/logs/
+
+snowflake_key.p8
+snowflake_key.pub

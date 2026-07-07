@@ -39,6 +39,17 @@ def upload_to_s3(**kwargs):
     else:
         print("exchange rate not found")
 
+    local_coresystem = (
+        f"/opt/data/core_system/orders_{execution_date.replace('-','')}.parquet"
+    )
+    s3_coresystem = f"core_system/event_date={execution_date}/orders.parquet"
+
+    if os.path.exists(local_coresystem):
+        s3_client.upload_file(local_coresystem, bucket_name, s3_coresystem)
+        print("core orders uploaded")
+    else:
+        print("core orders not found")
+
 
 with DAG(
     dag_id="ecom_data_pipeline",

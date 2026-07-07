@@ -1,6 +1,7 @@
 import psycopg2
 from faker import Faker
 from datetime import datetime, timedelta
+import pandas as pd
 
 faker = Faker()
 
@@ -67,6 +68,15 @@ def generate_odrers(num_records=100):
             order,
         )
 
+    cursor.execute("""
+                   SELECT * FROM orders WHERE order_date::date = CURRENT_DATE
+                   """)
+    rows = cursor.fetchall()
+    col_names = [desc[0] for desc in cursor.description]
+    df = pd.DataFrame(rows, columns=col_names)
+    df.to_parquet(
+        f"/opt/data/core_system/orders_{datetime.now().strftime('%Y%m%d')}.parquet"
+    )
     conn.commit()
     cursor.close()
     conn.close()
