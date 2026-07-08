@@ -6,7 +6,7 @@ terraform {
     }
     snowflake = {
       source  = "snowflakedb/snowflake"
-      version = "2.17.0"
+      version = "2.18.0"
     }
   }
 }
@@ -25,7 +25,8 @@ provider "snowflake" {
   authenticator     = "SNOWFLAKE_JWT"
   private_key       = file("${path.module}/snowflake_key.p8")
 
-  private_key_passphrase = var.snowflake_private_key_passphrase
+  private_key_passphrase   = var.snowflake_private_key_passphrase
+  preview_features_enabled = ["snowflake_storage_integration_resource"]
 
 }
 
