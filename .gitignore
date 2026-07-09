@@ -24,3 +24,7 @@ airflow/logs/
 
 snowflake_key.p8
 snowflake_key.pub
+
+target/
+logs/
+dbt_packages/

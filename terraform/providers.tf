@@ -26,7 +26,7 @@ provider "snowflake" {
   private_key       = file("${path.module}/snowflake_key.p8")
 
   private_key_passphrase   = var.snowflake_private_key_passphrase
-  preview_features_enabled = ["snowflake_storage_integration_resource"]
+  preview_features_enabled = ["snowflake_storage_integration_resource", "snowflake_file_format_resource", "snowflake_stage_resource"]
 
 }
 
