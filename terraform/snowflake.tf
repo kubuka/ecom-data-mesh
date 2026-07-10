@@ -24,6 +24,15 @@ resource "snowflake_storage_integration" "s3_integration" {
   #załoenie z góry ze tutaj bedzie ta rola, dzięki temu wszystko działa
   #rozwiązanie na circural dependency
 }
+resource "snowflake_external_volume" "gold_iceberg_volume" {
+  name = "GOLD_ICEBERG_VOLUME"
+  storage_location {
+    storage_location_name = "GOLD_S3_LOCATION"
+    storage_provider      = "S3"
+    storage_aws_role_arn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/snowflake_s3_read_role"
+    storage_base_url      = "s3://ecom-data-mesh-gold-layer/"
+  }
+}
 
 
 
@@ -34,7 +43,7 @@ data "aws_iam_policy_document" "snowflake_trust_policy" {
     actions = ["sts:AssumeRole"]
     principals {
       type        = "AWS"
-      identifiers = [snowflake_storage_integration.s3_integration.storage_aws_iam_user_arn]
+      identifiers = [snowflake_storage_integration.s3_integration.storage_aws_iam_user_arn, snowflake_external_volume.gold_iceberg_volume.describe_output[0].storage_locations[0].s3_storage_location[0].storage_aws_iam_user_arn]
     }
     condition {
       test     = "StringEquals"
@@ -42,8 +51,10 @@ data "aws_iam_policy_document" "snowflake_trust_policy" {
       values = [coalesce(
         snowflake_storage_integration.s3_integration.storage_aws_external_id,
         snowflake_storage_integration.s3_integration.describe_output[0].storage_aws_external_id[0].value,
-        "dummy_id"
-      )]
+        "dummy_id"), coalesce(
+        snowflake_external_volume.gold_iceberg_volume.describe_output[0].storage_locations[0].s3_storage_location[0].storage_aws_external_id,
+        "dummy_id_2")
+      ]
     }
   }
 }
@@ -57,8 +68,8 @@ resource "aws_iam_role" "snowflake_s3_role" {
 
 data "aws_iam_policy_document" "snowflake_s3_access_policy" {
   statement {
-    actions   = ["s3:ListBucket", "s3:GetObject"]
-    resources = [aws_s3_bucket.bronze_layer.arn, "${aws_s3_bucket.bronze_layer.arn}/*"]
+    actions   = ["s3:ListBucket", "s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
+    resources = [aws_s3_bucket.bronze_layer.arn, "${aws_s3_bucket.bronze_layer.arn}/*", aws_s3_bucket.gold_layer.arn, "${aws_s3_bucket.gold_layer.arn}/*"]
   }
 }
 #tworzy policy

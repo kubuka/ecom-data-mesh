@@ -35,5 +35,10 @@ models:
       +materialized: view
       +schema: silver
     gold:
-      +materialized: table
-      +schema: gold
+       +materialized: table
+       +schema: gold
+       +table_format: iceberg
+       +external_volume: GOLD_ICEBERG_VOLUME
+       +catalog: SNOWFLAKE
+       +iceberg_version: 2
+
