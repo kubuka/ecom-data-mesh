@@ -1,0 +1,64 @@
+version: 2
+
+models:
+  - name: dim_customer
+    columns:
+      - name: customer_sk
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null
+      - name: customer_profile
+        tests:
+          - accepted_values:
+              values: ['both_systems', 'core_system_only', 'clickstream_only']
+  
+  - name: dim_date
+    columns:
+      - name: date_id
+        tests:
+          - unique
+          - not_null
+  
+  - name: dim_exchange_rates
+    columns:
+      - name: rate_sk
+        tests:
+          - unique
+          - not_null
+      - name: exchange_rate_to_usd
+        tests:
+          - not_null
+
+  - name: fact_orders
+    columns:
+      - name: order_id
+        tests:
+          - unique
+          - not_null
+      - name: customer_sk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customer')
+              field: customer_sk
+      - name: rate_sk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_exchange_rates')
+              field: rate_sk
+  
+  - name: fact_clickstream
+    columns:
+      - name: event_id
+        tests:
+          - not_null
+      - name: customer_sk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customer')
+              field: customer_sk

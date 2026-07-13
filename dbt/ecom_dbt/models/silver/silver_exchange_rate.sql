@@ -9,7 +9,7 @@ with source_data as (
 
 SELECT
     raw_currency::VARCHAR as currency,
-    TRY_TO_DECIMAL(raw_rate,10,4) as exchange_rate_to_usd,
+    TRY_TO_DECIMAL(raw_rate,15,4) as exchange_rate_to_usd,
     TRY_TO_DATE(raw_date) as rate_date,
     file_name as source_file
 FROM source_data
