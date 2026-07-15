@@ -9,5 +9,10 @@ select
     rate_date::VARCHAR as date_id,
     rate_date, 
     currency,
-    exchange_rate_to_usd
-From source_rates
+    exchange_rate_to_usd,
+    event_date
+From source_rates sr
+
+{% if is_incremental() %}
+    WHERE sr.event_date > (SELECT MAX(event_date) FROM {{ this }})
+{% endif %}

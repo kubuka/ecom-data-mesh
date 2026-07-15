@@ -1,0 +1,62 @@
+version: 2
+
+sources:
+  - name: bronze
+    database: ECOM_DB
+    schema: BRONZE
+    tables:
+      - name: ext_core_system
+        external:
+          location: "@ECOM_DB.BRONZE.S3_CORE_SYSTEM_STAGE"
+          file_format: "( FORMAT_NAME = ECOM_DB.BRONZE.PARQUET_FORMAT )"
+          auto_refresh: false
+          partitions:
+            - name: event_date
+              data_type: date
+              expression: "to_date(substr(split_part(metadata$filename, 'event_date=', 2), 1, 10), 'YYYY-MM-DD')"
+        columns:
+          - name: order_id
+            data_type: varchar
+          - name: customer_id
+            data_type: number
+          - name: order_date
+            data_type: varchar
+          - name: total_amount
+            data_type: number(10,2)
+          - name: currency
+            data_type: varchar
+          - name: status
+            data_type: varchar
+          - name: payment_method
+            data_type: varchar
+      
+
+      - name: ext_clickstream
+        external:
+          location: "@ECOM_DB.BRONZE.S3_CLICKSTREAM_STAGE"
+          file_format: "( FORMAT_NAME = ECOM_DB.BRONZE.JSON_FORMAT )"
+          auto_refresh: false
+          partitions:
+            - name: event_date
+              data_type: date
+              expression: "to_date(substr(split_part(metadata$filename, 'event_date=', 2), 1, 10), 'YYYY-MM-DD')"
+
+      - name: ext_exchange_rates
+        external:
+          location: "@ECOM_DB.BRONZE.S3_EXCHANGE_STAGE"
+          file_format: "( FORMAT_NAME = ECOM_DB.BRONZE.CSV_FORMAT )"
+          auto_refresh: false
+          partitions:
+            - name: event_date
+              data_type: date
+              expression: "to_date(substr(split_part(metadata$filename, 'event_date=', 2), 1, 10), 'YYYY-MM-DD')"
+        columns:
+          - name: raw_currency
+            data_type: varchar
+            expression: "value:c1::varchar"
+          - name: raw_rate
+            data_type: varchar
+            expression: "value:c2::varchar"
+          - name: raw_date
+            data_type: varchar
+            expression: "value:c3::varchar"

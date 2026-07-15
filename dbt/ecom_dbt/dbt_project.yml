@@ -32,10 +32,14 @@ clean-targets:         # directories to be removed by `dbt clean`
 models:
   ecom_dbt:
     silver: 
-      +materialized: view
+      +materialized: incremental
       +schema: silver
+      +table_format: iceberg
+      +external_volume: GOLD_ICEBERG_VOLUME
+      +catalog: SNOWFLAKE
+      +iceberg_version: 2
     gold:
-       +materialized: table
+       +materialized: incremental
        +schema: gold
        +table_format: iceberg
        +external_volume: GOLD_ICEBERG_VOLUME

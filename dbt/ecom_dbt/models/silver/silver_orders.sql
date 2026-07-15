@@ -1,13 +1,35 @@
-with source_data as (
-    SELECT
-        $1:order_id::VARCHAR AS order_id,
-        $1:customer_id::INTEGER AS customer_id,
-        TRY_TO_TIMESTAMP($1:order_date::VARCHAR) AS order_date,
-        $1:total_amount::DECIMAL(10,2) AS total_amount,
-        $1:currency::VARCHAR AS currency,
-        $1:status::VARCHAR AS status,
-        $1:payment_method::VARCHAR AS payment_method,
-        metadata$filename AS file_name
-    FROM @ECOM_DB.BRONZE.S3_CORE_SYSTEM_STAGE
+{{config(
+    base_location_root = 'silver_orders',
+    unique_key='order_id',
+    incremental_strategy='merge',
+    partition_by='event_date'
+)}}
+
+WITH source_data AS (
+    SELECT 
+        order_id,
+        customer_id,
+        order_date,
+        total_amount,
+        currency,
+        status,
+        payment_method,
+        event_date
+    FROM {{ source('bronze', 'ext_core_system') }}
 )
-SELECT * FROM source_data
+
+SELECT 
+    order_id,
+    customer_id,
+    TRY_TO_TIMESTAMP(order_date)::TIMESTAMP_NTZ(6) AS order_date,
+    total_amount,
+    currency,
+    status,
+    payment_method,
+    event_date
+FROM source_data
+
+
+{% if is_incremental() %}
+    WHERE event_date > (SELECT MAX(event_date) FROM {{ this }})
+{% endif %}

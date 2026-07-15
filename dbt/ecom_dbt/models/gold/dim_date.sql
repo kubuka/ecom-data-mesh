@@ -1,8 +1,9 @@
-{{config(base_location_root = 'dim_date')}}
+{{config(base_location_root = 'dim_date',
+materialized='table')}}
 
 WITH date_spine AS (
-    SELECT DATEADD(day, -ROW_NUMBER() OVER (ORDER BY NULL), CURRENT_DATE())::TIMESTAMP_NTZ(6) AS date_day
-    FROM TABLE(GENERATOR(ROWCOUNT => 365))
+    SELECT DATEADD(day, ROW_NUMBER() OVER (ORDER BY NULL) - 1, '2024-01-01')::TIMESTAMP_NTZ(6) AS date_day
+    FROM TABLE(GENERATOR(ROWCOUNT => 2557)) --7lat od 2024
 )
 
 select

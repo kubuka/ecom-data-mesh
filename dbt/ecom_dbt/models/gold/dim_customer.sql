@@ -1,7 +1,8 @@
 {{config(base_location_root = 'dim_customer')}}
 
 WITH orders_customers AS (
-    SELECT DISTINCT customer_id::VARCHAR AS customer_id
+    SELECT DISTINCT customer_id::VARCHAR AS customer_id,
+    event_date
     FROM {{ ref('silver_orders') }}
     WHERE customer_id IS NOT NULL
 ),
@@ -17,7 +18,8 @@ all_customers AS (
     SELECT 
         COALESCE(o.customer_id, c.customer_id) AS customer_id,
         CASE WHEN o.customer_id IS NOT NULL THEN TRUE ELSE FALSE END AS has_orders,
-        CASE WHEN c.customer_id IS NOT NULL THEN TRUE ELSE FALSE END AS has_clickstream
+        CASE WHEN c.customer_id IS NOT NULL THEN TRUE ELSE FALSE END AS has_clickstream,
+        o.event_date
     FROM orders_customers o
     FULL OUTER JOIN clickstream_users c 
         ON o.customer_id = c.customer_id
@@ -33,5 +35,10 @@ SELECT
         WHEN has_orders THEN 'core_system_only'
         ELSE 'clickstream_only'
     END AS customer_profile,
-    CURRENT_TIMESTAMP(6) AS loaded_at
-FROM all_customers
+    CURRENT_TIMESTAMP(6) AS loaded_at,
+    event_date
+FROM all_customers ac
+
+{% if is_incremental() %}
+    WHERE ac.event_date > (SELECT MAX(event_date) FROM {{ this }})
+{% endif %}
