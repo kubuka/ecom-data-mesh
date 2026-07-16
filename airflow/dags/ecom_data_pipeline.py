@@ -79,5 +79,24 @@ with DAG(
         task_id="upload_files_to_s3", python_callable=upload_to_s3, provide_context=True
     )
 
+    # dbt
+
+    task_dbt_external_tables = BashOperator(
+        task_id="dbt_refresh_external_tables",
+        bash_command="dbt run-operation stage_external_sources --project-dir /opt/airflow/ecom_dbt --profiles-dir /opt/airflow/ecom_dbt",
+    )
+
+    task_dbt_run = BashOperator(
+        task_id="dbt_run_transformations",
+        bash_command="dbt run --project-dir /opt/airflow/ecom_dbt --profiles-dir /opt/airflow/ecom_dbt",
+    )
+
+    task_dbt_test = BashOperator(
+        task_id="dbt_test_data_quality",
+        bash_command="dbt test --project-dir /opt/airflow/ecom_dbt --profiles-dir /opt/airflow/ecom_dbt",
+    )
+
     task_generate_db_entries >> task_generate_logs
     [task_generate_logs, task_generate_exchange_rate] >> task_upload_s3
+
+    task_upload_s3 >> task_dbt_external_tables >> task_dbt_run >> task_dbt_test

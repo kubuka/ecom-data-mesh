@@ -1,0 +1,14 @@
+ecom_dbt:
+  outputs:
+    dev:
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      database: ECOM_DB
+      role: ACCOUNTADMIN
+      schema: BRONZE
+      threads: 4
+      type: snowflake
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      warehouse: COMPUTE_WH
+      private_key_path: /opt/airflow/ecom_dbt/snowflake_key.p8
+      private_key_passphrase: "{{ env_var('SNOWFLAKE_PASSPHRASE') }}"
+  target: dev

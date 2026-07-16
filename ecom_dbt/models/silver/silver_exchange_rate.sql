@@ -1,7 +1,7 @@
 {{config(
     base_location_root = 'silver_exchange_rates',
     incremental_strategy='merge',
-    unique_key=['rate_date', 'target_currency'],
+    unique_key=['rate_date', 'currency'],
     partition_by='event_date'
 )}}
 

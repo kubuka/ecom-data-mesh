@@ -9,12 +9,16 @@ x-airflow-common: &airflow-common
     AIRFLOW__LOGGING__LOGGING_LEVEL: INFO
     AIRFLOW__CORE__LOAD_EXAMPLES: 'False'
     AIRFLOW_CONN_AWS_S3_CONN: "${AIRFLOW_CONN_AWS_S3_CONN}"
+    SNOWFLAKE_ACCOUNT: "${SNOWFLAKE_ACCOUNT}"
+    SNOWFLAKE_USER: "${SNOWFLAKE_USER}"
+    SNOWFLAKE_PASSPHRASE: "${SNOWFLAKE_PASSPHRASE}"
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - ./airflow/logs:/opt/airflow/logs
     - ./airflow/plugins:/opt/airflow/plugins
     - ./data:/opt/data
     - ./scripts:/opt/airflow/scripts
+    - ./ecom_dbt:/opt/airflow/ecom_dbt
   env_file:
     - ./.env
   user: "${AIRFLOW_UID:-50000}:0"
