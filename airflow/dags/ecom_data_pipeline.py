@@ -88,7 +88,7 @@ with DAG(
 
     task_dbt_run = BashOperator(
         task_id="dbt_run_transformations",
-        bash_command="dbt run --project-dir /opt/airflow/ecom_dbt --profiles-dir /opt/airflow/ecom_dbt",
+        bash_command="dbt run --project-dir /opt/airflow/ecom_dbt --profiles-dir /opt/airflow/ecom_dbt --exclude dim_date",
     )
 
     task_dbt_test = BashOperator(
