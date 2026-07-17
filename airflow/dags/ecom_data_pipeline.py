@@ -54,7 +54,8 @@ def upload_to_s3(**kwargs):
 with DAG(
     dag_id="ecom_data_pipeline",
     start_date=datetime(2026, 7, 5),
-    schedule_interval="0 12 * * *",
+    # schedule_interval="0 12 * * *",
+    schedule_interval=None,
     catchup=False,
     max_active_runs=1,
     default_args=args,
