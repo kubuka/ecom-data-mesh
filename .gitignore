@@ -24,6 +24,7 @@ airflow/logs/
 
 snowflake_key.p8
 snowflake_key.pub
+metabase_key.p8
 
 target/
 logs/
