@@ -12,6 +12,7 @@ x-airflow-common: &airflow-common
     SNOWFLAKE_ACCOUNT: "${SNOWFLAKE_ACCOUNT}"
     SNOWFLAKE_USER: "${SNOWFLAKE_USER}"
     SNOWFLAKE_PASSPHRASE: "${SNOWFLAKE_PASSPHRASE}"
+    DBT_PRIVATE_KEY_PATH: "/opt/airflow/ecom_dbt/snowflake_key.p8"
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - ./airflow/logs:/opt/airflow/logs

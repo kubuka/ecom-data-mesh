@@ -9,6 +9,6 @@ ecom_dbt:
       type: snowflake
       user: "{{ env_var('SNOWFLAKE_USER') }}"
       warehouse: COMPUTE_WH
-      private_key_path: snowflake_key.p8
+      private_key_path: "{{ env_var('DBT_PRIVATE_KEY_PATH', 'snowflake_key.p8') }}"
       private_key_passphrase: "{{ env_var('SNOWFLAKE_PASSPHRASE') }}"
   target: dev
