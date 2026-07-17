@@ -11,16 +11,40 @@ on:
 jobs:
   dbt_run_and_test:
     runs-on: ubuntu-latest
+    env:
+      SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+      SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+      SNOWFLAKE_PASSPHRASE: ${{ secrets.SNOWFLAKE_PASSPHRASE }}
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
       - name: Install dbt
         run: |
           pip install dbt-snowflake
+
+      - name: Add Snowflake Private Key
+        run: |
+          cd ecom_dbt
+          echo "${{ secrets.SNOWFLAKE_PRIVATE_KEY }}" > snowflake_key.p8
+      
+      - name: Install dbt packages
+        run: |
+          cd ecom_dbt
+          dbt deps
+      
+      - name: Compile dbt models
+        run: |
+          cd ecom_dbt
+          dbt compile
+
+      - name: Run dbt tests
+        run: |
+          cd ecom_dbt
+          dbt test
