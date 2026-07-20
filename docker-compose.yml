@@ -52,7 +52,7 @@ services:
 
   dbt-init:
     <<: *airflow-common
-    command: bash -c "airflow db migrate && (airflow users create  --username admin  --firstname admin  --lastname admin  --role Admin  --email admin@example.com  --password admin || true)" #&& cd /opt/airflow/dbt_crypto && dbt deps"
+    command: bash -c "airflow db migrate && (airflow users create  --username admin  --firstname admin  --lastname admin  --role Admin  --email admin@example.com  --password admin || true) && cd /opt/airflow/ecom_dbt && dbt deps"
 
   postgres_airflow:
     image: postgres:13

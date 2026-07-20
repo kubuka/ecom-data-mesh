@@ -16,7 +16,9 @@ wheels/
 .terraform/
 *.tfplan
 
-data/
+data/core_system/*.parquet
+data/exchange_rate/*.csv
+data/logs/*.json
 
 .DS_Store
 
@@ -27,6 +29,7 @@ snowflake_key.pub
 metabase_key.p8
 
 target/
-logs/
+ecom_dbt/logs/
 dbt_packages/
 .user.yml
+/logs
