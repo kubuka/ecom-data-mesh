@@ -25,6 +25,24 @@ The pipeline moves data from live generators to an analytical dashboard. Airflow
 ```
 
 ---
+
+## Table of Contents
+- [Architecture Flow](#architecture-flow)
+- [Tech Stack](#tech-stack)
+- [Infrastructure as Code & Security](#infrastructure-as-code--security)
+- [Data Lakehouse & Orchestration](#data-lakehouse--orchestration)
+- [Transformations & Modeling](#transformations--modeling)
+- [CI/CD & Data Quality](#cicd--data-quality)
+- [Dashboard & Serving Layer](#dashboard--serving-layer)
+- [Summary and Key Learnings](#summary-and-key-learnings)
+  - [Key Challenges](#key-challenges)
+  - [Key Takeaways](#key-takeaways)
+- [Before You Run](#before-you-run)
+  - [Precondition](#precondition)
+  - [Execution](#execution)
+  - [Environment File Templates](#environment-file-templates)
+
+---
 ## Tech Stack
 - **Terraform** - Manages all infrastructure as code. It provisions the AWS S3 buckets, IAM roles, and Snowflake databases, automating the secure connection between the two platforms without hardcoding keys.
 
@@ -113,7 +131,8 @@ This is where dbt handles the 'T' in ELT. Instead of Snowflake storing data nati
 
 The final Gold layer is structured as a Star Schema to optimize analytical queries.
 
-link
+<img width="1031" height="841" alt="Zrzut ekranu 2026-07-20 o 11 35 17" src="https://github.com/user-attachments/assets/f6734cca-883c-4954-b0b6-22acf10b1846" />
+
 
 * ***Incremental Iceberg Tables*** - To avoid scanning and rewriting the entire history on every pipeline run, the Silver and Gold layers are built as incremental models. dbt uses a "High Water Mark" strategy. It queries the target Iceberg table for the maximum `event_date`, and then asks the Bronze source only for partitions newer than that date. It then uses the `MERGE` strategy to append or update the new records.
 ```sql
@@ -180,7 +199,8 @@ models:
 ## Dashboard & Serving Layer
 The visualization layer is powered by Metabase. It connects directly to Snowflake using Key Pair Authentication and queries the Apache Iceberg tables on S3 via native SQL. There is no data duplication or extraction process - Metabase acts as a thin client, joining the Star Schema and calculating daily revenue in USD on the fly.
 
-link
+<img width="1191" height="751" alt="Zrzut ekranu 2026-07-17 o 11 06 43" src="https://github.com/user-attachments/assets/24c72ca5-b7e2-4c70-9564-15ddd4f48986" />
+
 
 ---
 ## Summary and Key Learnings
